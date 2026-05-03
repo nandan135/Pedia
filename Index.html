@@ -1,0 +1,386 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PediGrowth Toolkit</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; }
+        /* Smooth transitions for the progress bars */
+        .progress-bar-fill { transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-teal-500 to-blue-500 text-white p-4 shadow-sm flex-none">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i data-lucide="activity" class="w-6 h-6"></i>
+                <h1 class="text-xl font-bold tracking-wide">PediGrowth Toolkit</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto mt-6 px-4 w-full flex-grow">
+        
+        <!-- Navigation Tabs -->
+        <div class="flex rounded-xl overflow-hidden border border-slate-200 bg-white mb-6 shadow-sm">
+            <button id="tab-btn-chart" onclick="switchTab('chart')" class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-3.5 text-xs sm:text-sm font-semibold transition-colors bg-teal-50 text-teal-700 border-b-2 border-teal-500">
+                <i data-lucide="table" class="w-4 h-4"></i> Quick Chart
+            </button>
+            <button id="tab-btn-calculator" onclick="switchTab('calculator')" class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-3.5 text-xs sm:text-sm font-semibold transition-colors text-slate-500 hover:bg-slate-50 border-b-2 border-transparent">
+                <i data-lucide="calculator" class="w-4 h-4"></i> Calculator & Analysis
+            </button>
+        </div>
+
+        <!-- Tab 1: Lookup Chart -->
+        <div id="section-chart" class="block">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-4 sm:p-5 bg-slate-50 border-b border-slate-200 text-center">
+                    <h2 class="text-lg sm:text-xl font-bold text-slate-800 tracking-tight">PEDIATRIC GROWTH LOOKUP</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">Expected values based on Weech's formulas</p>
+                </div>
+                
+                <div class="w-full">
+                    <table class="w-full text-center border-collapse table-fixed">
+                        <thead>
+                            <tr>
+                                <th class="py-3 sm:py-4 px-1 sm:px-2 w-1/3 bg-blue-100 border-b border-slate-200 text-blue-800">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <i data-lucide="ruler" class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mb-0.5 sm:mb-1"></i>
+                                        <span class="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider text-blue-600/80">Expected</span>
+                                        <span class="text-[11px] sm:text-sm font-black leading-tight mt-0.5">HEIGHT (cm)</span>
+                                    </div>
+                                </th>
+                                <th class="py-3 sm:py-4 px-1 sm:px-2 w-1/3 bg-amber-100 border-b border-x border-slate-200 text-amber-900">
+                                    <div class="flex flex-col items-center justify-center h-full justify-end pb-1">
+                                        <i data-lucide="calendar" class="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 mb-0.5 sm:mb-1"></i>
+                                        <span class="text-[11px] sm:text-sm font-black leading-tight mt-0.5">AGE</span>
+                                    </div>
+                                </th>
+                                <th class="py-3 sm:py-4 px-1 sm:px-2 w-1/3 bg-rose-100 border-b border-slate-200 text-rose-800">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <i data-lucide="scale" class="w-4 h-4 sm:w-5 sm:h-5 text-rose-600 mb-0.5 sm:mb-1"></i>
+                                        <span class="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider text-rose-600/80">Expected</span>
+                                        <span class="text-[11px] sm:text-sm font-black leading-tight mt-0.5">WEIGHT (kg)</span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="chart-body">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-3 bg-slate-50 text-center text-[10px] sm:text-xs text-slate-500 border-t border-slate-200">
+                    *Values under 2 years for height are standard developmental milestones.
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Calculator -->
+        <div id="section-calculator" class="hidden">
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Input Section -->
+                <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 h-fit">
+                    <h2 class="text-base sm:text-lg font-bold mb-4 sm:mb-5 flex items-center gap-2 text-slate-800 border-b border-slate-100 pb-3">
+                        <i data-lucide="calendar" class="w-5 h-5 text-teal-500"></i> Patient Details
+                    </h2>
+                    
+                    <div class="space-y-4 sm:space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Age</label>
+                            <div class="flex gap-2">
+                                <input type="number" id="input-age" placeholder="e.g. 5" class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition text-sm sm:text-base">
+                                <select id="input-age-unit" class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 sm:p-3 font-medium text-slate-700 outline-none focus:bg-white focus:ring-2 focus:ring-teal-500 cursor-pointer text-sm sm:text-base">
+                                    <option value="months">Months</option>
+                                    <option value="years" selected>Years</option>
+                                </select>
+                            </div>
+                            <p class="text-[10px] sm:text-xs text-slate-400 mt-1.5 ml-1">Valid input: 3-12 months, or 1-12 years.</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 sm:gap-4 pt-1 sm:pt-2">
+                            <div>
+                                <label class="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5 truncate">Actual Weight</label>
+                                <div class="relative">
+                                    <input type="number" id="input-weight" placeholder="0.0" class="w-full p-2.5 sm:p-3 pr-8 sm:pr-10 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-rose-400 focus:border-rose-400 outline-none transition text-sm sm:text-base">
+                                    <span class="absolute right-2.5 sm:right-3 top-2.5 sm:top-3 text-slate-400 text-xs sm:text-sm font-medium">kg</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5 truncate">Actual Height</label>
+                                <div class="relative">
+                                    <input type="number" id="input-height" placeholder="0.0" class="w-full p-2.5 sm:p-3 pr-8 sm:pr-10 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition text-sm sm:text-base">
+                                    <span class="absolute right-2.5 sm:right-3 top-2.5 sm:top-3 text-slate-400 text-xs sm:text-sm font-medium">cm</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="space-y-5 sm:space-y-6">
+                    
+                    <!-- Expected Values Cards -->
+                    <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                        <div class="bg-blue-50/50 p-4 sm:p-5 rounded-2xl border border-blue-100 flex flex-col items-center justify-center text-center shadow-sm">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-full flex items-center justify-center mb-2">
+                                <i data-lucide="ruler" class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600"></i>
+                            </div>
+                            <p class="text-[10px] sm:text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Expected Height</p>
+                            <p class="text-2xl sm:text-3xl font-black text-blue-900">
+                                <span id="out-exp-height">--</span>
+                                <span class="text-sm sm:text-base font-medium text-blue-700 ml-1">cm</span>
+                            </p>
+                        </div>
+
+                        <div class="bg-rose-50/50 p-4 sm:p-5 rounded-2xl border border-rose-100 flex flex-col items-center justify-center text-center shadow-sm">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-rose-100 rounded-full flex items-center justify-center mb-2">
+                                <i data-lucide="scale" class="w-4 h-4 sm:w-5 sm:h-5 text-rose-600"></i>
+                            </div>
+                            <p class="text-[10px] sm:text-xs font-bold text-rose-600 uppercase tracking-wider mb-1">Expected Weight</p>
+                            <p class="text-2xl sm:text-3xl font-black text-rose-900">
+                                <span id="out-exp-weight">--</span>
+                                <span class="text-sm sm:text-base font-medium text-rose-700 ml-1">kg</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Analysis Card -->
+                    <div id="analysis-card" class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 hidden">
+                        <h2 class="text-base sm:text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 border-b border-slate-100 pb-3">
+                            <i data-lucide="alert-circle" class="w-5 h-5 text-amber-500"></i> Clinical Assessment
+                        </h2>
+                        <div class="space-y-4 sm:space-y-5">
+                            <!-- Weight Analysis -->
+                            <div id="wfa-container" class="hidden">
+                                <div class="flex justify-between items-end mb-1.5">
+                                    <span class="text-xs sm:text-sm font-semibold text-slate-700">Weight-for-Age</span>
+                                    <span class="text-xs sm:text-sm font-black text-slate-800" id="wfa-percent">0%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2 sm:h-2.5 mb-2 overflow-hidden">
+                                    <div id="wfa-bar" class="progress-bar-fill h-full rounded-full" style="width: 0%;"></div>
+                                </div>
+                                <span id="wfa-badge" class="inline-block px-2 sm:px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-bold"></span>
+                            </div>
+
+                            <!-- Height Analysis -->
+                            <div id="hfa-container" class="hidden pt-3 sm:pt-4 border-t border-slate-100">
+                                <div class="flex justify-between items-end mb-1.5">
+                                    <span class="text-xs sm:text-sm font-semibold text-slate-700">Height-for-Age (Stunting)</span>
+                                    <span class="text-xs sm:text-sm font-black text-slate-800" id="hfa-percent">0%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2 sm:h-2.5 mb-2 overflow-hidden">
+                                    <div id="hfa-bar" class="progress-bar-fill h-full rounded-full" style="width: 0%;"></div>
+                                </div>
+                                <span id="hfa-badge" class="inline-block px-2 sm:px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-bold"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    
+    <!-- Footer -->
+    <footer class="mt-8 mb-6 text-center px-4 flex-none">
+        <p class="text-xs sm:text-sm text-slate-500">
+            Built & maintained by <span class="font-semibold text-slate-700">Nandan Biswas</span>
+        </p>
+        <p class="text-[10px] sm:text-xs text-slate-400 mt-1">
+            — for queries, suggestions & improvements, write to <a href="mailto:mail99pencil@gmail.com" class="text-teal-600 hover:text-teal-700 font-medium transition-colors">mail99pencil@gmail.com</a>
+        </p>
+    </footer>
+
+    <!-- Application Logic -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Data for Chart
+        const REFERENCE_DATA = [
+            { ageStr: '3 months', h: 60, w: 6.0 },
+            { ageStr: '6 months', h: 66, w: 7.5 },
+            { ageStr: '9 months', h: 72, w: 9.0 },
+            { ageStr: '1 year', h: 75, w: 10.0 },
+            { ageStr: '2 years', h: 89.0, w: 12.0 },
+            { ageStr: '3 years', h: 95.0, w: 14.0 },
+            { ageStr: '4 years', h: 101.0, w: 16.0 },
+            { ageStr: '5 years', h: 107.0, w: 18.0 },
+            { ageStr: '6 years', h: 113.0, w: 20.0 },
+            { ageStr: '7 years', h: 119.0, w: 22.0 },
+            { ageStr: '8 years', h: 125.0, w: 25.5 },
+            { ageStr: '9 years', h: 131.0, w: 29.0 },
+            { ageStr: '10 years', h: 137.0, w: 32.5 },
+            { ageStr: '11 years', h: 143.0, w: 36.0 },
+            { ageStr: '12 years', h: 149.0, w: 39.5 },
+        ];
+
+        // Populate Chart
+        const chartBody = document.getElementById('chart-body');
+        REFERENCE_DATA.forEach((row, index) => {
+            const isEven = index % 2 === 0;
+            const hBg = isEven ? 'bg-blue-50/40' : 'bg-blue-50/80';
+            const ageBg = isEven ? 'bg-amber-50/60' : 'bg-amber-100/50';
+            const wBg = isEven ? 'bg-rose-50/40' : 'bg-rose-50/80';
+
+            const tr = document.createElement('tr');
+            tr.className = "border-b border-slate-100 last:border-0";
+            tr.innerHTML = `
+                <td class="py-2.5 sm:py-3 px-1 text-blue-700 font-bold text-sm sm:text-lg ${hBg}">${row.h.toFixed(1)}</td>
+                <td class="py-2.5 sm:py-3 px-1 border-x border-slate-200 text-amber-900 font-bold text-xs sm:text-base ${ageBg}">${row.ageStr}</td>
+                <td class="py-2.5 sm:py-3 px-1 text-rose-700 font-bold text-sm sm:text-lg ${wBg}">${row.w.toFixed(1)}</td>
+            `;
+            chartBody.appendChild(tr);
+        });
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            const btnChart = document.getElementById('tab-btn-chart');
+            const btnCalc = document.getElementById('tab-btn-calculator');
+            const secChart = document.getElementById('section-chart');
+            const secCalc = document.getElementById('section-calculator');
+
+            const activeClasses = "bg-teal-50 text-teal-700 border-teal-500".split(" ");
+            const inactiveClasses = "text-slate-500 hover:bg-slate-50 border-transparent".split(" ");
+
+            if (tabId === 'chart') {
+                secChart.classList.remove('hidden');
+                secCalc.classList.add('hidden');
+                
+                btnChart.classList.add(...activeClasses);
+                btnChart.classList.remove(...inactiveClasses);
+                btnCalc.classList.add(...inactiveClasses);
+                btnCalc.classList.remove(...activeClasses);
+            } else {
+                secChart.classList.add('hidden');
+                secCalc.classList.remove('hidden');
+                
+                btnCalc.classList.add(...activeClasses);
+                btnCalc.classList.remove(...inactiveClasses);
+                btnChart.classList.add(...inactiveClasses);
+                btnChart.classList.remove(...activeClasses);
+            }
+        }
+
+        // Calculator Logic
+        const inputs = ['input-age', 'input-age-unit', 'input-weight', 'input-height'];
+        inputs.forEach(id => document.getElementById(id).addEventListener('input', calculate));
+
+        function getGradeStyles(percent, type) {
+            const p = parseFloat(percent);
+            if (type === 'weight') {
+                if (p > 90) return { text: 'Normal', classes: 'text-emerald-700 bg-emerald-100', barClass: 'bg-emerald-500' };
+                if (p >= 75) return { text: 'Mild (Grade I)', classes: 'text-amber-700 bg-amber-100', barClass: 'bg-amber-400' };
+                if (p >= 60) return { text: 'Moderate (Grade II)', classes: 'text-orange-700 bg-orange-100', barClass: 'bg-orange-500' };
+                return { text: 'Severe (Grade III)', classes: 'text-rose-700 bg-rose-100', barClass: 'bg-rose-500' };
+            } else {
+                if (p > 95) return { text: 'Normal', classes: 'text-emerald-700 bg-emerald-100', barClass: 'bg-emerald-500' };
+                if (p >= 90) return { text: 'Mild Stunting', classes: 'text-amber-700 bg-amber-100', barClass: 'bg-amber-400' };
+                if (p >= 85) return { text: 'Moderate Stunting', classes: 'text-orange-700 bg-orange-100', barClass: 'bg-orange-500' };
+                return { text: 'Severe Stunting', classes: 'text-rose-700 bg-rose-100', barClass: 'bg-rose-500' };
+            }
+        }
+
+        function calculate() {
+            const ageStr = document.getElementById('input-age').value;
+            const ageUnit = document.getElementById('input-age-unit').value;
+            const actW = document.getElementById('input-weight').value;
+            const actH = document.getElementById('input-height').value;
+
+            const expWEl = document.getElementById('out-exp-weight');
+            const expHEl = document.getElementById('out-exp-height');
+            const analysisCard = document.getElementById('analysis-card');
+            const wfaContainer = document.getElementById('wfa-container');
+            const hfaContainer = document.getElementById('hfa-container');
+
+            if (!ageStr || isNaN(ageStr) || ageStr <= 0) {
+                expWEl.innerText = '--';
+                expHEl.innerText = '--';
+                analysisCard.classList.add('hidden');
+                return;
+            }
+
+            let numAge = parseFloat(ageStr);
+            let expW = null;
+            let expH = null;
+
+            if (ageUnit === 'months') {
+                if (numAge >= 3 && numAge <= 12) expW = (numAge + 9) / 2;
+                if (numAge <= 3) expH = 60;
+                else if (numAge <= 6) expH = 66;
+                else if (numAge <= 9) expH = 72;
+                else if (numAge <= 12) expH = 75;
+            } else {
+                if (numAge >= 1 && numAge <= 6) expW = (numAge * 2) + 8;
+                else if (numAge >= 7 && numAge <= 12) expW = ((numAge * 7) - 5) / 2;
+
+                if (numAge === 1) expH = 75;
+                else if (numAge >= 2 && numAge <= 12) expH = (numAge * 6) + 77;
+            }
+
+            expWEl.innerText = expW ? expW.toFixed(1) : '--';
+            expHEl.innerText = expH ? expH.toFixed(1) : '--';
+
+            let showAnalysis = false;
+
+            // Weight Analysis
+            if (expW && actW) {
+                const wfa = ((parseFloat(actW) / expW) * 100).toFixed(1);
+                const styles = getGradeStyles(wfa, 'weight');
+                
+                document.getElementById('wfa-percent').innerText = `${wfa}%`;
+                const bar = document.getElementById('wfa-bar');
+                bar.style.width = `${Math.min(wfa, 100)}%`;
+                bar.className = `progress-bar-fill h-full rounded-full ${styles.barClass}`;
+                
+                const badge = document.getElementById('wfa-badge');
+                badge.className = `inline-block px-2 sm:px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-bold ${styles.classes}`;
+                badge.innerText = styles.text;
+
+                wfaContainer.classList.remove('hidden');
+                showAnalysis = true;
+            } else {
+                wfaContainer.classList.add('hidden');
+            }
+
+            // Height Analysis
+            if (expH && actH) {
+                const hfa = ((parseFloat(actH) / expH) * 100).toFixed(1);
+                const styles = getGradeStyles(hfa, 'height');
+                
+                document.getElementById('hfa-percent').innerText = `${hfa}%`;
+                const bar = document.getElementById('hfa-bar');
+                bar.style.width = `${Math.min(hfa, 100)}%`;
+                bar.className = `progress-bar-fill h-full rounded-full ${styles.barClass}`;
+                
+                const badge = document.getElementById('hfa-badge');
+                badge.className = `inline-block px-2 sm:px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-bold ${styles.classes}`;
+                badge.innerText = styles.text;
+
+                hfaContainer.classList.remove('hidden');
+                showAnalysis = true;
+            } else {
+                hfaContainer.classList.add('hidden');
+            }
+
+            if (showAnalysis) {
+                analysisCard.classList.remove('hidden');
+            } else {
+                analysisCard.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
+
+
